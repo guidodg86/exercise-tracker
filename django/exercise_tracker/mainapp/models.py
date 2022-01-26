@@ -16,7 +16,7 @@ class User(models.Model):
 
 class Exercise(models.Model):
     id_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='Exercises')
+        User, on_delete=models.CASCADE, related_name='log')
     description = models.CharField(max_length=100)
     duration = models.IntegerField(default=1)
-    date_exercise = models.DateField()
+    date_exercise = models.DateTimeField()
