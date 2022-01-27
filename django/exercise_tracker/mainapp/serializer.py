@@ -21,3 +21,13 @@ class UserLogSerializer(serializers.ModelSerializer):
         model = User
         fields = ['_id', 'username', 'log']
 
+class FilteredUserLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['_id', 'username', 'log']
+
+    log = serializers.SerializerMethodField('get_log')
+
+    def get_log(self, _id):
+        exercises = Exercise.objects.filter(id_user=_id)[:self.context.get("limit")]
+        return exercises.values_list('description', flat=True)
