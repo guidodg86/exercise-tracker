@@ -30,4 +30,5 @@ class FilteredUserLogSerializer(serializers.ModelSerializer):
 
     def get_log(self, _id):
         exercises = Exercise.objects.filter(id_user=_id)[:self.context.get("limit")]
-        return exercises.values_list('description', flat=True)
+        exercise_subset = ExerciseLogSerializer(instance=exercises, many=True)
+        return exercise_subset.data

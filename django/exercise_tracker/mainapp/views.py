@@ -44,17 +44,18 @@ class UserExerciseLogView(APIView):
             response_exercise_log = UserLogSerializer(user_selected)
             return Response(response_exercise_log.data)
 
+        context_for_serializer = {}
         for param in request.query_params:
             if param != 'limit' and param != 'from' and param != 'to':
                 return Response({"error": "bad request"})
             if param == 'limit':
-                limit_of_logs = int(request.query_params[param])
+                context_for_serializer ['limit'] = int(request.query_params[param])
             if param == 'from':
-                initial_date_logs = datetime.strptime(request.query_params[param], "%Y-%m-%d")
+                context_for_serializer ['from_date'] = datetime.strptime(request.query_params[param], "%Y-%m-%d")
             if param == 'to':
-                last_date_logs = datetime.strptime(request.query_params[param], "%Y-%m-%d")
+                context_for_serializer ['to_date']  = datetime.strptime(request.query_params[param], "%Y-%m-%d")
 
-        response_exercise_log= FilteredUserLogSerializer(user_selected, context={"limit": limit_of_logs})
+        response_exercise_log= FilteredUserLogSerializer(user_selected, context=context_for_serializer)
         return Response(response_exercise_log.data)
 """        except:
             return Response({"error": "bad request"})"""
