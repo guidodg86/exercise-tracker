@@ -24,11 +24,22 @@ class UserLogSerializer(serializers.ModelSerializer):
 class FilteredUserLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['_id', 'username', 'log']
+        fields = [ 'username', 'count', '_id', 'log']
 
     log = serializers.SerializerMethodField('get_log')
+    count = serializers.SerializerMethodField('get_count')
 
     def get_log(self, _id):
+        if not hasattr(self, '_two_values'):
+            self.log_data = FilteredUserLogSerializer.obtain_logs(self, _id)
+        return self.log_data['logs']
+
+    def get_count(self, _id):
+        if not hasattr(self, '_two_values'):
+            self.log_data = FilteredUserLogSerializer.obtain_logs(self, _id)
+        return self.log_data['count']
+
+    def obtain_logs(self, _id):
         try:
             exercises_from = Exercise.objects.filter(id_user=_id, date_exercise__gt=self.context.get("from_date"))
         except:
@@ -38,8 +49,9 @@ class FilteredUserLogSerializer(serializers.ModelSerializer):
         except:
             exercises_from_to = exercises_from
         try:
-            exercises = exercises_from_to[:self.context.get("limit")]
+            exercises = exercises_from_to[:self.context.get("limit")]   
         except:
             exercises = exercises_from_to
         exercise_subset = ExerciseLogSerializer(instance=exercises, many=True)
-        return exercise_subset.data
+        log_count = len(exercise_subset.data)
+        return {"logs": exercise_subset.data, "count":log_count}

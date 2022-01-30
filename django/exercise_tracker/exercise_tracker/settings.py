@@ -14,6 +14,9 @@ DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = []
 
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': "%Y-%m-%d" 
+}
 
 # Application definition
 
