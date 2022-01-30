@@ -2,6 +2,10 @@ from dataclasses import field
 from rest_framework import serializers
 from mainapp.models import User, Exercise
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:

@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from datetime import datetime
 from mainapp.models import User, Exercise
-from mainapp.serializer import ExerciseSerializer, UserLogSerializer, FilteredUserLogSerializer
+from mainapp.serializer import ExerciseSerializer, UserLogSerializer, FilteredUserLogSerializer, UserSerializer
 
 class CreateUserView(APIView):
     def post(self, request):
@@ -16,6 +16,11 @@ class CreateUserView(APIView):
             return Response({"username": new_username, "_id":new_user_record._id})                               
         except:
             return Response({"error": "bad request"})
+    
+    def get(self, request):
+        users = User.objects.all()
+        user_list = UserSerializer(users, many=True)
+        return Response(user_list.data)
 
 
 class CreateExerciseView(APIView):
