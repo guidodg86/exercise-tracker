@@ -29,6 +29,17 @@ class FilteredUserLogSerializer(serializers.ModelSerializer):
     log = serializers.SerializerMethodField('get_log')
 
     def get_log(self, _id):
-        exercises = Exercise.objects.filter(id_user=_id)[:self.context.get("limit")]
+        try:
+            exercises_from = Exercise.objects.filter(id_user=_id, date_exercise__gt=self.context.get("from_date"))
+        except:
+            exercises_from = Exercise.objects.filter(id_user=_id,)
+        try:
+            exercises_from_to = exercises_from.filter(date_exercise__lt=self.context.get("to_date"))
+        except:
+            exercises_from_to = exercises_from
+        try:
+            exercises = exercises_from_to[:self.context.get("limit")]
+        except:
+            exercises = exercises_from_to
         exercise_subset = ExerciseLogSerializer(instance=exercises, many=True)
         return exercise_subset.data

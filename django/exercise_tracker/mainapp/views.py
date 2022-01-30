@@ -38,25 +38,26 @@ class CreateExerciseView(APIView):
 
 class UserExerciseLogView(APIView):
     def get(self, request, id_user):
-        #try:
-        user_selected = User.objects.get(pk=id_user)
-        if len(request.query_params) == 0:
-            response_exercise_log = UserLogSerializer(user_selected)
+        try:
+            user_selected = User.objects.get(pk=id_user)
+            if len(request.query_params) == 0:
+                response_exercise_log = UserLogSerializer(user_selected)
+                return Response(response_exercise_log.data)
+
+            context_for_serializer = {}
+            for param in request.query_params:
+                if param != 'limit' and param != 'from' and param != 'to':
+                    return Response({"error": "bad request"})
+                if param == 'limit':
+                    context_for_serializer ['limit'] = int(request.query_params[param])
+                if param == 'from':
+                    context_for_serializer ['from_date'] = datetime.strptime(request.query_params[param], "%Y-%m-%d")
+                if param == 'to':
+                    context_for_serializer ['to_date']  = datetime.strptime(request.query_params[param], "%Y-%m-%d")
+
+            response_exercise_log= FilteredUserLogSerializer(user_selected, context=context_for_serializer)
             return Response(response_exercise_log.data)
+        except:
+            return Response({"error": "bad request"})
 
-        context_for_serializer = {}
-        for param in request.query_params:
-            if param != 'limit' and param != 'from' and param != 'to':
-                return Response({"error": "bad request"})
-            if param == 'limit':
-                context_for_serializer ['limit'] = int(request.query_params[param])
-            if param == 'from':
-                context_for_serializer ['from_date'] = datetime.strptime(request.query_params[param], "%Y-%m-%d")
-            if param == 'to':
-                context_for_serializer ['to_date']  = datetime.strptime(request.query_params[param], "%Y-%m-%d")
-
-        response_exercise_log= FilteredUserLogSerializer(user_selected, context=context_for_serializer)
-        return Response(response_exercise_log.data)
-"""        except:
-            return Response({"error": "bad request"})"""
             
